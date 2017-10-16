@@ -56,6 +56,7 @@ const unsigned char numbertable[] =
     0x3E, /*24 U */
     0x6E, /*25 Y */
     0x63, /*26 ° */
+	0x00, /*27   */
 };
 
 int i2c_write( void *buf, int len )
@@ -104,7 +105,7 @@ int ht16k33_update( void )
 {
     unsigned short buf[ BUFFER_SIZE ];
     int i;
-    
+
     for( i = 0; i < BUFFER_SIZE; i++ )
     {
         buf[ i ] = htobe16( displaybuffer[ i ] );
@@ -119,9 +120,9 @@ int ht16k33_brightness( unsigned char brightness )
 
     if ( brightness > 15 )
         brightness = 15;
-        
+
     buf[ 0 ] = ( HT16K33_CMD_BRIGHTNESS | brightness );
-    
+
     return i2c_write( buf, 1 );
 }
 
@@ -131,9 +132,9 @@ int ht16k33_blink_rate( unsigned char rate )
 
     if ( rate > 3 )
         rate = 0; // turn off if not sure
-        
+
     buf[ 0 ] = ( HT16K33_BLINK_CMD | HT16K33_BLINK_DISPLAYON | ( rate << 1 ) );
-    
+
     return i2c_write( buf, 1 );
 }
 
@@ -141,10 +142,10 @@ int ht16k33_init( void )
 {
     unsigned char buf[ 2 ];
     int rc = 0;
-        
+
     buf[ 0 ] = HT16K33_CMD_SETUP;
     if ( i2c_write( buf, 1 ) == 0 )
-    {    
+    {
         ht16k33_blink_rate( HT16K33_BLINK_OFF );
         ht16k33_brightness( 7 );
         ht16k33_update();
@@ -153,12 +154,21 @@ int ht16k33_init( void )
     {
         rc = 1;
     }
-    
+
     return rc;
 }
 
 int main( int argc, char *argv[] )
 {
+
+	if ( argc == 2 && strcmp(argv [1],"--help") == 0 )
+	{
+		printf ("Use the following values for CH1-4:\n");
+		printf ("16=H, 17=J, 18=L, 19=n, 20=o, 21=P\n");
+		printf ("22=r, 23=t, 24=U, 25=Y, 26=°\n");
+		exit ( 0 );
+	}
+
     char filename[ 20 ];
 
     snprintf( filename, 19, "/dev/i2c-%d", i2c_bus );
@@ -178,13 +188,6 @@ int main( int argc, char *argv[] )
     /* Usage */
     if ( ht16k33_init() == 0 )
     {
-	if ( argc == 2 && strcmp(argv [1],"--help") == 0 )
-	{
-		printf ("Use the following values for CH1-4:\n");
-		printf ("16=H, 17=J, 18=L, 19=n, 20=o, 21=P\n");
-		printf ("22=r, 23=t, 24=U, 25=Y, 26=°\n");
-		exit ( 0 );
-	}
         if ( argc >= 5 )
         {
                 buffer_write_digit( 0, strtol(argv [1], (char **)NULL, 0));
