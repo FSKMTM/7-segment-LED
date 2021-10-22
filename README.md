@@ -4,5 +4,5 @@ Tools for driving <a href="http://www.adafruit.com">Adafruit</a> 7-segment LED d
 
 <b>ledwrite</b>: write string to display<br>
 <b>ledbrightness</b>: set display brightness<br>
-<b>ledclock</b>: clock display (with initscript)<br>
+<b>ledclock</b>: clock display (with initscript and systemd service)<br>
 
