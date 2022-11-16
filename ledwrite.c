@@ -28,6 +28,23 @@ int handle  = 0;
 int i2c_bus = 1;
 
 const unsigned char numbertable[] =
+/*
+7-segment bitmap:
+
+	 --A--
+	|     |
+	F     B
+.	|     |
+H	 --G--
+.	|     |
+	E     C
+	|     |
+	 --D--
+
+bit order	76543210
+segment #	HGFEDCBA
+*/
+
 {
 	0x3F, /* 0 */
 	0x06, /* 1 */
@@ -39,7 +56,7 @@ const unsigned char numbertable[] =
 	0x07, /* 7 */
 	0x7F, /* 8 */
 	0x6F, /* 9 */
-	0x77, /*10 a */
+	0x77, /*10 A */
 	0x7C, /*11 b */
 	0x39, /*12 C */
 	0x5E, /*13 d */
@@ -51,12 +68,17 @@ const unsigned char numbertable[] =
 	0x54, /*19 n */
 	0x5C, /*20 o */
 	0x73, /*21 P */
-	0x50, /*22 r */
-	0x78, /*23 t */
-	0x3E, /*24 U */
-	0x6E, /*25 Y */
-	0x63, /*26 ° */
-	0x00, /*27   */
+	0x50, /*22 q */
+	0x50, /*23 r */
+	0x78, /*24 t */
+	0x3E, /*25 U */
+	0x6E, /*26 Y */
+	0x58, /*27 c */
+	0x74, /*28 h */
+	0x10, /*29 i */
+	0x63, /*30 ° */
+	0x40, /*31 - */
+	0x00, /*32   */
 };
 
 int i2c_write( void *buf, int len )
@@ -87,7 +109,7 @@ void buffer_clear( void )
 
 void buffer_write_digit( int digit, int number )
 {
-	if ( ( digit > 4 ) || ( number > 26 ) )
+	if ( ( digit > 4 ) || ( number > 32 ) )
 		return;
 
 	displaybuffer[digit] = numbertable[number];
@@ -164,8 +186,9 @@ int main( int argc, char *argv[] )
 	if ( argc == 2 && strcmp(argv [1],"--help") == 0 )
 	{
 		printf ("Use the following values for CH1-4:\n");
-		printf ("16=H, 17=J, 18=L, 19=n, 20=o, 21=P\n");
-		printf ("22=r, 23=t, 24=U, 25=Y, 26=°\n");
+		printf ("16=H, 17=J, 18=L, 19=n, 20=o, 21=P,\n");
+		printf ("22=q, 23=r, 24=t, 25=U, 26=Y, 27=c,\n");
+		printf ("28=h, 29=i, 30=°, 31=-, 32=<space>\n");
 		exit ( 0 );
 	}
 
